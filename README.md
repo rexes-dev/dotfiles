@@ -7,9 +7,10 @@ My personal configs
 ```bash
 $ dconf dump /org/gnome/terminal/ > gnome-terminal.conf
 $ dconf load /org/gnome/terminal/ < gnome-terminal.conf
+
+$ stow -t ~ nvim
 ```
 
 # TODO:
 
-- neovim (or vim)
 - .bashrc

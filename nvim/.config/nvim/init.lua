@@ -16,3 +16,5 @@ vim.opt.expandtab = true
 
 vim.opt.cursorline = true
 
+require("config.lazy")
+
