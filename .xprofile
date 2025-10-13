@@ -6,3 +6,4 @@ xset s noblank
 
 # Disable Display Power Management Signaling
 xset -dpms
+
