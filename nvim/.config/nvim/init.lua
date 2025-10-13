@@ -167,8 +167,9 @@ vim.o.scrolloff = 10
 vim.o.confirm = true
 
 -- Personal
+
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = { "c", "cpp" },
+	pattern = { "c", "cpp", "cuda" },
 	callback = function()
 		vim.opt_local.tabstop = 2
 		vim.opt_local.shiftwidth = 2
@@ -693,7 +694,22 @@ require("lazy").setup({
 			--  - settings (table): Override the default settings passed when initializing the server.
 			--        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
 			local servers = {
-				-- clangd = {},
+				clangd = {
+					root_markers = {
+						"compile_commands.json",
+						"Makefile",
+						".git",
+					},
+					cmd = {
+						"clangd",
+						"--background-index",
+						"--clang-tidy",
+						"--header-insertion=iwyu",
+						"--completion-style=detailed",
+						"--function-arg-placeholders",
+						"--fallback-style=llvm",
+					},
+				},
 				-- gopls = {},
 				-- pyright = {},
 				-- rust_analyzer = {},
