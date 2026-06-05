@@ -6,6 +6,8 @@
 # ß
 # If the above line is not correctly displayed, fix your editor first!
 
+# The location of the default file: /etc/i3status.conf
+
 general {
         colors = true
         interval = 5
