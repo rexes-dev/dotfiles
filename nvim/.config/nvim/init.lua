@@ -81,11 +81,25 @@ require("lazy").setup({
       },
     },
 
+    -- lazydev: gives lua_ls Neovim's API types, so `vim` resolves instead of
+    -- warning "Undefined global"
+    {
+      "folke/lazydev.nvim",
+      ft = "lua",
+      opts = {
+        library = {
+          { path = "${3rd}/luv/library", words = { "vim%.uv" } }, -- vim.uv types
+        },
+      },
+    },
+
     -- LSP
     {
       "mason-org/mason-lspconfig.nvim",
       opts = {
-        ensure_installed = { "clangd" },
+        -- lua_ls was already auto-enabled (mason-lspconfig enables any
+        -- installed server); name it now that lazydev needs it
+        ensure_installed = { "clangd", "lua_ls" },
       },
       dependencies = {
         { "mason-org/mason.nvim", opts = {} },
