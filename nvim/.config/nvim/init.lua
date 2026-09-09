@@ -21,6 +21,9 @@ vim.opt.tabstop = 2
 -- indentations (>>, <<), fix indentation (==)
 vim.opt.shiftwidth = 2
 
+-- To show messages inline all the time without any command
+vim.diagnostic.config({ virtual_text = true })
+
 -- For more details: https://lazy.folke.io/installation
 -- It is recommended to run :checkhealth lazy
 -- Bootstrap lazy.nvim
