@@ -67,25 +67,16 @@ require("lazy").setup({
     },
 
     -- treesitter: parses code into a syntax tree; core uses it for
-    -- highlighting and folds. Plugin ships the parsers and queries.
+    -- highlighting and folds. Pinned to `master`: `main` builds every parser
+    -- with the tree-sitter CLI, `master` needs only a C compiler.
     {
-      -- TODO(rexes): Need to study the details
       "nvim-treesitter/nvim-treesitter",
       lazy = false,
       build = ":TSUpdate",
+      main = "nvim-treesitter.configs", -- opts go here, not to the root module
       opts = {
-        ensure_installed = {
-          "cpp", "c", -- C/C++
-          "lua", -- for editing nvim config
-          "vim", "vimdoc"  -- vim help files
-        },
-
-        sync_install = false,
-
-        -- Enable syntax highlighting
-        highlight = { enable = true, },
-
-        -- Enable indentation (better than Neovim's default for C++)
+        ensure_installed = { "c", "cpp", "cuda", "lua", "python" },
+        highlight = { enable = true },
         indent = { enable = true },
       },
     },
