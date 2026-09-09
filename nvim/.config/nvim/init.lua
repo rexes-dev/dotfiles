@@ -21,6 +21,14 @@ vim.opt.tabstop = 2
 -- indentations (>>, <<), fix indentation (==)
 vim.opt.shiftwidth = 2
 
+-- reload the buffer when the file changed on disk (git checkout, external edits)
+vim.opt.autoread = true
+
+-- autoread only acts when nvim checks; these events make it check
+vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
+  command = "checktime",
+})
+
 -- To show messages inline all the time without any command
 vim.diagnostic.config({ virtual_text = true })
 
@@ -58,7 +66,8 @@ require("lazy").setup({
       end,
     },
 
-    -- treesitter
+    -- treesitter: parses code into a syntax tree; core uses it for
+    -- highlighting and folds. Plugin ships the parsers and queries.
     {
       -- TODO(rexes): Need to study the details
       "nvim-treesitter/nvim-treesitter",
