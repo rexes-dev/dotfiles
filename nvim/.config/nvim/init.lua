@@ -6,6 +6,9 @@ vim.g.maplocalleader = "\\"
 vim.opt.number = true
 vim.opt.relativenumber = true
 
+-- built-in gruvbox (same palette, hard background)
+vim.cmd.colorscheme("retrobox")
+
 -- show whitespace
 vim.opt.list = true
 vim.opt.listchars = {
@@ -53,19 +56,6 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
   spec = {
-    {
-      "folke/tokyonight.nvim",
-      lazy = false,
-      priority = 1000,
-      opts = {
-        style = "night", -- storm, night, moon, day
-      },
-      config = function(_, opts)
-        require("tokyonight").setup(opts)
-        vim.cmd("colorscheme tokyonight")
-      end,
-    },
-
     -- treesitter: parses code into a syntax tree; core uses it for
     -- highlighting and folds. Pinned to `master`: `main` builds every parser
     -- with the tree-sitter CLI, `master` needs only a C compiler.
@@ -136,7 +126,6 @@ require("lazy").setup({
       end,
     },
   },
-  install = { colorscheme = { "tokyonight", "habamax" } },
   -- automatically check for plugin updates
   checker = { enabled = true },
 })

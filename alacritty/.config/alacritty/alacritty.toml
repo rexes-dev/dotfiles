@@ -1,0 +1,10 @@
+# Alacritty cannot render ligatures (upstream issue #50, closed PRs #5615,
+# #5696, #6580), so Fira Code is used here for its letterforms only.
+# Fira Code ships no italic face; Alacritty synthesises one.
+
+[font]
+size = 12
+
+[font.normal]
+family = "Fira Code"
+style = "Regular"

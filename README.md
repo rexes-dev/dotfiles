@@ -10,6 +10,7 @@ $ dconf load /org/gnome/terminal/ < gnome-terminal.conf
 
 $ stow -t ~ nvim
 $ stow -t ~ i3
+$ stow -t ~ alacritty
 ```
 
 # TODO:
