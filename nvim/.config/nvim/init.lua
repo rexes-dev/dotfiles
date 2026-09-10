@@ -1,5 +1,3 @@
-print("Running init.lua")
-
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
@@ -56,21 +54,6 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
   spec = {
-    -- treesitter: parses code into a syntax tree; core uses it for
-    -- highlighting and folds. Pinned to `master`: `main` builds every parser
-    -- with the tree-sitter CLI, `master` needs only a C compiler.
-    {
-      "nvim-treesitter/nvim-treesitter",
-      lazy = false,
-      build = ":TSUpdate",
-      main = "nvim-treesitter.configs", -- opts go here, not to the root module
-      opts = {
-        ensure_installed = { "c", "cpp", "cuda", "lua", "python" },
-        highlight = { enable = true },
-        indent = { enable = true },
-      },
-    },
-
     -- lazydev: gives lua_ls Neovim's API types, so `vim` resolves instead of
     -- warning "Undefined global"
     {
@@ -82,6 +65,9 @@ require("lazy").setup({
         },
       },
     },
+
+    -- completion
+    { "saghen/blink.cmp", version = "1.*", opts = {} },
 
     -- LSP
     {
@@ -100,6 +86,7 @@ require("lazy").setup({
     -- clangd
     {
       "neovim/nvim-lspconfig",
+      dependencies = { "saghen/blink.cmp" },
       config = function()
         vim.lsp.config("clangd", {
           cmd = {
@@ -129,4 +116,3 @@ require("lazy").setup({
   -- automatically check for plugin updates
   checker = { enabled = true },
 })
-
