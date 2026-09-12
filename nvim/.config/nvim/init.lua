@@ -1,6 +1,9 @@
+--==== leader ====--
+-- must come before lazy.nvim, plugin specs capture <leader> at load time
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
+--==== options ====--
 vim.opt.number = true
 vim.opt.relativenumber = true
 
@@ -26,41 +29,22 @@ vim.opt.shiftwidth = 2
 -- reload the buffer when the file changed on disk (git checkout, external edits)
 vim.opt.autoread = true
 
+-- keep the sign column open; otherwise the whole buffer shifts two columns
+-- sideways every time a diagnostic appears and clears as you type
+vim.opt.signcolumn = "yes"
+
+-- To show messages inline all the time without any command
+vim.diagnostic.config({ virtual_text = true })
+
+--==== autocmds ====--
 -- autoread only acts when nvim checks; these events make it check
 vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
   command = "checktime",
 })
 
--- To show messages inline all the time without any command
-vim.diagnostic.config({ virtual_text = true })
-
--- keep the sign column open; otherwise the whole buffer shifts two columns
--- sideways every time a diagnostic appears and clears as you type
-vim.opt.signcolumn = "yes"
-
--- Neovim already maps grn rename, gra code action, grr references, gri
--- implementation, grt type definition, gO symbols, K hover. Only add what it
--- doesn't, and route the list-producing ones through fzf-lua for the preview.
-vim.api.nvim_create_autocmd("LspAttach", {
-  group = vim.api.nvim_create_augroup("my.lsp", {}),
-  callback = function(ev)
-    local opts = { buffer = ev.buf }
-    local fzf_lua = require("fzf-lua")
-    vim.keymap.set("n", "gd", fzf_lua.lsp_definitions, opts)                       -- definitions
-    vim.keymap.set("n", "grr", fzf_lua.lsp_references, opts)                       -- references
-    vim.keymap.set("n", "gO", fzf_lua.lsp_document_symbols, opts)                  -- symbols in file
-    vim.keymap.set("n", "<leader>ch", "<cmd>LspClangdSwitchSourceHeader<cr>", opts) -- header <-> source
-    vim.keymap.set({ "n", "v" }, "<leader>cf", vim.lsp.buf.format, opts)           -- format
-    vim.keymap.set("n", "<leader>th", function()                                   -- toggle inlay hints
-      vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = ev.buf }), { bufnr = ev.buf })
-    end, opts)
-    vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
-  end,
-})
-
+--==== bootstrap ====--
 -- For more details: https://lazy.folke.io/installation
 -- It is recommended to run :checkhealth lazy
--- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
@@ -77,6 +61,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+--==== plugins ====--
 require("lazy").setup({
   spec = {
     -- lazydev: gives lua_ls Neovim's API types, so `vim` resolves instead of
@@ -144,7 +129,7 @@ require("lazy").setup({
       },
     },
 
-    -- LSP
+    -- LSP: server installation and enablement
     {
       "mason-org/mason-lspconfig.nvim",
       opts = {
@@ -157,10 +142,10 @@ require("lazy").setup({
       dependencies = {
         { "mason-org/mason.nvim", opts = {} },
         "neovim/nvim-lspconfig",
-      }
+      },
     },
 
-    -- clangd
+    -- LSP: clangd settings and the buffer-local keymaps for any attached server
     {
       "neovim/nvim-lspconfig",
       dependencies = { "saghen/blink.cmp" },
@@ -179,6 +164,27 @@ require("lazy").setup({
 
         -- no on_attach here: it would replace nvim-lspconfig's, which is what
         -- registers :LspClangdSwitchSourceHeader
+
+        -- Neovim already maps grn rename, gra code action, grr references, gri
+        -- implementation, grt type definition, gO symbols, K hover. Only add what
+        -- it doesn't, and route the list-producing ones through fzf-lua for the
+        -- preview.
+        vim.api.nvim_create_autocmd("LspAttach", {
+          group = vim.api.nvim_create_augroup("my.lsp", {}),
+          callback = function(ev)
+            local opts = { buffer = ev.buf }
+            local fzf_lua = require("fzf-lua")
+            vim.keymap.set("n", "gd", fzf_lua.lsp_definitions, opts)                        -- definitions
+            vim.keymap.set("n", "grr", fzf_lua.lsp_references, opts)                        -- references
+            vim.keymap.set("n", "gO", fzf_lua.lsp_document_symbols, opts)                   -- symbols in file
+            vim.keymap.set("n", "<leader>ch", "<cmd>LspClangdSwitchSourceHeader<cr>", opts) -- header <-> source
+            vim.keymap.set({ "n", "v" }, "<leader>cf", vim.lsp.buf.format, opts)            -- format
+            vim.keymap.set("n", "<leader>th", function()                                    -- toggle inlay hints
+              vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = ev.buf }), { bufnr = ev.buf })
+            end, opts)
+            vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
+          end,
+        })
       end,
     },
   },
