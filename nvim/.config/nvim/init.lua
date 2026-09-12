@@ -33,6 +33,10 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold" }, {
 -- To show messages inline all the time without any command
 vim.diagnostic.config({ virtual_text = true })
 
+-- keep the sign column open; otherwise the whole buffer shifts two columns
+-- sideways every time a diagnostic appears and clears as you type
+vim.opt.signcolumn = "yes"
+
 -- For more details: https://lazy.folke.io/installation
 -- It is recommended to run :checkhealth lazy
 -- Bootstrap lazy.nvim
