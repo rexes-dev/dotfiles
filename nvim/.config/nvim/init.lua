@@ -207,7 +207,6 @@ require("lazy").setup({
             vim.keymap.set("n", "<leader>th", function()                                    -- toggle inlay hints
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = ev.buf }), { bufnr = ev.buf })
             end, opts)
-            vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
           end,
         })
       end,
