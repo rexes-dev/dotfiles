@@ -97,6 +97,20 @@ require("lazy").setup({
       },
     },
 
+    -- file explorer: a directory is just a buffer you edit
+    {
+      "stevearc/oil.nvim",
+      -- upstream advises against lazy loading; oil has to claim directory
+      -- buffers before anything else opens one
+      lazy = false,
+      opts = {
+        view_options = { show_hidden = true },
+      },
+      keys = {
+        { "-", "<cmd>Oil<cr>", desc = "open parent directory" },
+      },
+    },
+
     -- git diff markers in the sign column
     {
       "lewis6991/gitsigns.nvim",
