@@ -10,11 +10,12 @@ vim.opt.relativenumber = true
 -- built-in gruvbox (same palette, hard background)
 vim.cmd.colorscheme("retrobox")
 
--- show whitespace
+-- only whitespace that bites: trailing spaces, real tabs, and invisible nbsp
 vim.opt.list = true
 vim.opt.listchars = {
-  space = "·",
   tab = "» ",
+  trail = "·",
+  nbsp = "␣",
 }
 
 -- <Tab> becomes space
@@ -26,8 +27,18 @@ vim.opt.tabstop = 2
 -- indentations (>>, <<), fix indentation (==)
 vim.opt.shiftwidth = 2
 
+-- lowercase search matches any case; a capital anywhere makes it exact again
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+
+-- undo history survives closing the file
+vim.opt.undofile = true
+
 -- reload the buffer when the file changed on disk (git checkout, external edits)
 vim.opt.autoread = true
+
+-- how long CursorHold waits; the 4s default is too slow for the checktime below
+vim.opt.updatetime = 200
 
 -- keep the sign column open; otherwise the whole buffer shifts two columns
 -- sideways every time a diagnostic appears and clears as you type
