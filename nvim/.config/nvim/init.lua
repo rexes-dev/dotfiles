@@ -11,6 +11,7 @@ vim.cmd.colorscheme("retrobox")
 vim.opt.list = true
 vim.opt.listchars = {
   space = "·",
+  tab = "» ",
 }
 
 -- <Tab> becomes space
@@ -45,12 +46,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(ev)
     local opts = { buffer = ev.buf }
     local fzf_lua = require("fzf-lua")
-    vim.keymap.set("n", "gd", fzf_lua.lsp_definitions, opts)        -- definitions
-    vim.keymap.set("n", "grr", fzf_lua.lsp_references, opts)        -- references
-    vim.keymap.set("n", "gO", fzf_lua.lsp_document_symbols, opts)   -- symbols in file
-    vim.keymap.set("n", "<leader>h", "<cmd>LspClangdSwitchSourceHeader<cr>", opts)              -- header <-> source
-    vim.keymap.set({ "n", "v" }, "<leader>cf", vim.lsp.buf.format, opts)                        -- format
-    vim.keymap.set("n", "<leader>th", function()                                                -- toggle inlay hints
+    vim.keymap.set("n", "gd", fzf_lua.lsp_definitions, opts)                       -- definitions
+    vim.keymap.set("n", "grr", fzf_lua.lsp_references, opts)                       -- references
+    vim.keymap.set("n", "gO", fzf_lua.lsp_document_symbols, opts)                  -- symbols in file
+    vim.keymap.set("n", "<leader>h", "<cmd>LspClangdSwitchSourceHeader<cr>", opts) -- header <-> source
+    vim.keymap.set({ "n", "v" }, "<leader>cf", vim.lsp.buf.format, opts)           -- format
+    vim.keymap.set("n", "<leader>th", function()                                   -- toggle inlay hints
       vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = ev.buf }), { bufnr = ev.buf })
     end, opts)
     vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
@@ -67,7 +68,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   if vim.v.shell_error ~= 0 then
     vim.api.nvim_echo({
       { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-      { out, "WarningMsg" },
+      { out,                            "WarningMsg" },
       { "\nPress any key to exit..." },
     }, true, {})
     vim.fn.getchar()
@@ -98,16 +99,16 @@ require("lazy").setup({
       "ibhagwan/fzf-lua",
       opts = {},
       keys = {
-        { "<leader>ff", function() require("fzf-lua").files() end, desc = "find files" },
-        { "<leader>fg", function() require("fzf-lua").live_grep() end, desc = "live grep" },
-        { "<leader>fw", function() require("fzf-lua").grep_cword() end, desc = "grep word under cursor" },
-        { "<leader>fb", function() require("fzf-lua").buffers() end, desc = "buffers" },
-        { "<leader>fo", function() require("fzf-lua").oldfiles() end, desc = "recent files" },
+        { "<leader>ff", function() require("fzf-lua").files() end,                      desc = "find files" },
+        { "<leader>fg", function() require("fzf-lua").live_grep() end,                  desc = "live grep" },
+        { "<leader>fw", function() require("fzf-lua").grep_cword() end,                 desc = "grep word under cursor" },
+        { "<leader>fb", function() require("fzf-lua").buffers() end,                    desc = "buffers" },
+        { "<leader>fo", function() require("fzf-lua").oldfiles() end,                   desc = "recent files" },
         { "<leader>fs", function() require("fzf-lua").lsp_live_workspace_symbols() end, desc = "workspace symbols" },
-        { "<leader>fd", function() require("fzf-lua").diagnostics_workspace() end, desc = "diagnostics" },
-        { "<leader>fc", function() require("fzf-lua").git_status() end, desc = "changed files" },
-        { "<leader>fk", function() require("fzf-lua").keymaps() end, desc = "keymaps" },
-        { "<leader>fr", function() require("fzf-lua").resume() end, desc = "resume last picker" },
+        { "<leader>fd", function() require("fzf-lua").diagnostics_workspace() end,      desc = "diagnostics" },
+        { "<leader>fc", function() require("fzf-lua").git_status() end,                 desc = "changed files" },
+        { "<leader>fk", function() require("fzf-lua").keymaps() end,                    desc = "keymaps" },
+        { "<leader>fr", function() require("fzf-lua").resume() end,                     desc = "resume last picker" },
       },
     },
 
@@ -118,6 +119,8 @@ require("lazy").setup({
         -- lua_ls was already auto-enabled (mason-lspconfig enables any
         -- installed server); name it now that lazydev needs it
         ensure_installed = { "clangd", "lua_ls" },
+        -- stylua has an --lsp mode, so mason-lspconfig counts it as a server
+        automatic_enable = { exclude = { "stylua" } },
       },
       dependencies = {
         { "mason-org/mason.nvim", opts = {} },
@@ -150,4 +153,3 @@ require("lazy").setup({
   -- automatically check for plugin updates
   checker = { enabled = true },
 })
-
