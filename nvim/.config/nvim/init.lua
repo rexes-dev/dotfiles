@@ -49,7 +49,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
     vim.keymap.set("n", "gd", fzf_lua.lsp_definitions, opts)                       -- definitions
     vim.keymap.set("n", "grr", fzf_lua.lsp_references, opts)                       -- references
     vim.keymap.set("n", "gO", fzf_lua.lsp_document_symbols, opts)                  -- symbols in file
-    vim.keymap.set("n", "<leader>h", "<cmd>LspClangdSwitchSourceHeader<cr>", opts) -- header <-> source
+    vim.keymap.set("n", "<leader>ch", "<cmd>LspClangdSwitchSourceHeader<cr>", opts) -- header <-> source
     vim.keymap.set({ "n", "v" }, "<leader>cf", vim.lsp.buf.format, opts)           -- format
     vim.keymap.set("n", "<leader>th", function()                                   -- toggle inlay hints
       vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = ev.buf }), { bufnr = ev.buf })
@@ -109,6 +109,38 @@ require("lazy").setup({
         { "<leader>fc", function() require("fzf-lua").git_status() end,                 desc = "changed files" },
         { "<leader>fk", function() require("fzf-lua").keymaps() end,                    desc = "keymaps" },
         { "<leader>fr", function() require("fzf-lua").resume() end,                     desc = "resume last picker" },
+      },
+    },
+
+    -- git diff markers in the sign column
+    {
+      "lewis6991/gitsigns.nvim",
+      event = { "BufReadPre", "BufNewFile" },
+      opts = {
+        -- mappings follow the gitsigns README, buffer-local so they exist only
+        -- where gitsigns attached
+        on_attach = function(bufnr)
+          local gs = require("gitsigns")
+          local function map(mode, l, r, desc)
+            vim.keymap.set(mode, l, r, { buffer = bufnr, desc = desc })
+          end
+
+          -- ]c/[c must stay diff motions when an actual diff window is open
+          map("n", "]c", function()
+            if vim.wo.diff then vim.cmd.normal({ "]c", bang = true }) else gs.nav_hunk("next") end
+          end, "next hunk")
+          map("n", "[c", function()
+            if vim.wo.diff then vim.cmd.normal({ "[c", bang = true }) else gs.nav_hunk("prev") end
+          end, "prev hunk")
+
+          -- trimmed set; everything else is reachable as :Gitsigns <action>
+          map("n", "<leader>hp", gs.preview_hunk, "preview hunk")
+          map("n", "<leader>hs", gs.stage_hunk, "stage hunk")
+          map("n", "<leader>hr", gs.reset_hunk, "reset hunk")
+          map("v", "<leader>hs", function() gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "stage selection")
+          map("v", "<leader>hr", function() gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "reset selection")
+          map("n", "<leader>hb", function() gs.blame_line({ full = true }) end, "blame line")
+        end,
       },
     },
 
