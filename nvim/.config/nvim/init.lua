@@ -37,6 +37,26 @@ vim.diagnostic.config({ virtual_text = true })
 -- sideways every time a diagnostic appears and clears as you type
 vim.opt.signcolumn = "yes"
 
+-- Neovim already maps grn rename, gra code action, grr references, gri
+-- implementation, grt type definition, gO symbols, K hover. Only add what it
+-- doesn't, and route the list-producing ones through fzf-lua for the preview.
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("my.lsp", {}),
+  callback = function(ev)
+    local opts = { buffer = ev.buf }
+    local fzf_lua = require("fzf-lua")
+    vim.keymap.set("n", "gd", fzf_lua.lsp_definitions, opts)        -- definitions
+    vim.keymap.set("n", "grr", fzf_lua.lsp_references, opts)        -- references
+    vim.keymap.set("n", "gO", fzf_lua.lsp_document_symbols, opts)   -- symbols in file
+    vim.keymap.set("n", "<leader>h", "<cmd>LspClangdSwitchSourceHeader<cr>", opts)              -- header <-> source
+    vim.keymap.set({ "n", "v" }, "<leader>cf", vim.lsp.buf.format, opts)                        -- format
+    vim.keymap.set("n", "<leader>th", function()                                                -- toggle inlay hints
+      vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = ev.buf }), { bufnr = ev.buf })
+    end, opts)
+    vim.lsp.inlay_hint.enable(true, { bufnr = ev.buf })
+  end,
+})
+
 -- For more details: https://lazy.folke.io/installation
 -- It is recommended to run :checkhealth lazy
 -- Bootstrap lazy.nvim
@@ -73,6 +93,24 @@ require("lazy").setup({
     -- completion
     { "saghen/blink.cmp", version = "1.*", opts = {} },
 
+    -- fuzzy finder; needs the fzf binary on PATH
+    {
+      "ibhagwan/fzf-lua",
+      opts = {},
+      keys = {
+        { "<leader>ff", function() require("fzf-lua").files() end, desc = "find files" },
+        { "<leader>fg", function() require("fzf-lua").live_grep() end, desc = "live grep" },
+        { "<leader>fw", function() require("fzf-lua").grep_cword() end, desc = "grep word under cursor" },
+        { "<leader>fb", function() require("fzf-lua").buffers() end, desc = "buffers" },
+        { "<leader>fo", function() require("fzf-lua").oldfiles() end, desc = "recent files" },
+        { "<leader>fs", function() require("fzf-lua").lsp_live_workspace_symbols() end, desc = "workspace symbols" },
+        { "<leader>fd", function() require("fzf-lua").diagnostics_workspace() end, desc = "diagnostics" },
+        { "<leader>fc", function() require("fzf-lua").git_status() end, desc = "changed files" },
+        { "<leader>fk", function() require("fzf-lua").keymaps() end, desc = "keymaps" },
+        { "<leader>fr", function() require("fzf-lua").resume() end, desc = "resume last picker" },
+      },
+    },
+
     -- LSP
     {
       "mason-org/mason-lspconfig.nvim",
@@ -102,21 +140,14 @@ require("lazy").setup({
             "--function-arg-placeholders",
             "--fallback-style=llvm",
           },
-          on_attach = function(client, bufnr)
-            local opts = { buffer = bufnr }
-            vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)       -- go to definition
-            vim.keymap.set("n", "K",  vim.lsp.buf.hover, opts)            -- show docs
-            vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)       -- find references
-            vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)   -- rename symbol
-            vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts) -- code actions
-            vim.keymap.set("n", "<leader>f",  vim.lsp.buf.format, opts)   -- format file
-          end,
         })
 
-        vim.lsp.enable("clangd")  -- explicitly enable it
+        -- no on_attach here: it would replace nvim-lspconfig's, which is what
+        -- registers :LspClangdSwitchSourceHeader
       end,
     },
   },
   -- automatically check for plugin updates
   checker = { enabled = true },
 })
+
