@@ -154,6 +154,22 @@ require("lazy").setup({
       },
     },
 
+    -- git diff viewer: panel of changed files + side-by-side diff.
+    -- renders into native diff windows, so diffopt/linematch still apply
+    {
+      "sindrets/diffview.nvim",
+      dependencies = { "nvim-lua/plenary.nvim" },
+      cmd = { "DiffviewOpen", "DiffviewClose" },
+      -- the file panel wants nvim-web-devicons and warns on every open
+      -- without it; skip the extra plugin and go text-only
+      opts = { use_icons = false },
+      keys = {
+        -- takes a revision range too, e.g. :DiffviewOpen main..HEAD
+        { "<leader>gd", "<cmd>DiffviewOpen<cr>",  desc = "open diffview" },
+        { "<leader>gq", "<cmd>DiffviewClose<cr>", desc = "close diffview" },
+      },
+    },
+
     -- LSP: server installation and enablement
     {
       "mason-org/mason-lspconfig.nvim",
